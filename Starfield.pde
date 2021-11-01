@@ -1,6 +1,6 @@
 class Particle
 {
-  float x, y, size, angle, speed, timeAlive, col, sat, bri;
+  float x, y, size, angle, speed, timeAlive, col, sat, bri, maxTime;
   Particle()
   {
     x = mouseX;
@@ -11,6 +11,7 @@ class Particle
     col = (float)(Math.random() * 60 + 240);
     sat = (float)(Math.random() * 50 + 50);
     bri = (float)(Math.random() * 50 + 50);
+    maxTime = 90;
   }
   
   void move()
@@ -38,8 +39,9 @@ class Exploder extends Particle
     speed = (float)(Math.random() * 10 + 5);
     timeAlive = 0;
     col = 0;
-    sat = 100;
-    bri = (float)(Math.random() * 100);
+    sat = (float)(Math.random() * 100);
+    bri = 100; //make it white instead idk how //prob saturation with 100 bri
+    maxTime = 100;
   }
   
   void move()
@@ -50,7 +52,77 @@ class Exploder extends Particle
   }
 }
 
-Particle[][] guys = new Particle[20][50]; //do tha 2d array
+class Imploder extends Particle
+{
+  float initX, initY;
+  Imploder(float xPos, float yPos)
+  {
+    initX = mouseX;
+    initY = mouseY;
+    x = xPos;
+    y = yPos;
+    size = 10;
+    speed = (float)(Math.random() * 10 + 5);
+    timeAlive = 0;
+    col = 230;
+    sat = 100;
+    bri = (int)(Math.random() * 50 + 51);
+    maxTime = 90;
+  }
+  
+  void move()
+  {
+    if(timeAlive < 79)
+    {
+      x = initX + 100 * cos(angle);
+      y = initY + 100 * sin(angle);
+      angle += speed/100;
+    }
+    else
+    {
+      x -= 10 * cos(angle);
+      y -= 10 * sin(angle);
+    }
+    timeAlive++;
+  }
+}
+
+class FigureEight extends Particle
+{
+  float initX, initY;
+  FigureEight()
+  {
+    initX = mouseX;
+    initY = mouseY;
+    x = initX;
+    y = 0;
+    size = 10;
+    speed = (float)(Math.random() * 10);
+    timeAlive = 0;
+    col = 130;
+    sat = 100;
+    bri = (int)(Math.random() * 50 + 51);
+    maxTime = 90;
+    angle = radians(-45);
+  }
+  
+  void move()
+  {
+    if(timeAlive < maxTime/2)
+    {
+      x += 5.6;
+      y = initY + 80 * sin((x-initX)/40);
+    }
+    if(timeAlive >= maxTime/2)
+    {
+      x -= 5.6;
+      y = initY - 80 * sin((x-initX)/40);
+    }
+    timeAlive++;
+  }
+}
+
+Particle[][] guys = new Particle[20][50];
 int x = 0;
 void setup()
 {
@@ -70,7 +142,7 @@ void draw()
       {
         guys[j][i].move();
         guys[j][i].show();
-        if(guys[j][0].timeAlive >= 90)
+        if(guys[j][0].timeAlive >= guys[j][0].maxTime)
           guys[j][0] = null;
       }
   }
@@ -78,7 +150,8 @@ void draw()
 
 void mousePressed()
 {
-  int pType = (int)(Math.random()*2);
+  int pType = (int)(Math.random()*3);
+  //pType = 3;
   boolean b = false;
   for(int j = 0; j < guys.length && b == false; j++)
   {
@@ -87,10 +160,24 @@ void mousePressed()
       for(int i = 0; i < guys[0].length; i++)
       {
         if(pType == 0)
+        {
           guys[j][i] = new Particle();
+          guys[j][i].angle = i * radians(360/guys[j].length);
+        }
         if(pType == 1)
+        {
           guys[j][i] = new Exploder();
-        guys[j][i].angle = i * radians(360/guys[j].length);
+          guys[j][i].angle = i * radians(360/guys[j].length);
+        }
+        if(pType == 2)
+        {
+          guys[j][i] = new Imploder(mouseX + 50*cos(i * radians(360/guys[j].length)), mouseY + 50*sin(i * radians(360/guys[j].length)));
+          guys[j][i].angle = i * radians(360/guys[j].length);
+        }
+        /*if(pType == 3)
+        {
+          guys[j][i] = new FigureEight();
+        }*/
       }
       b = true;
     }
@@ -98,3 +185,4 @@ void mousePressed()
 }
 
 //randomized animations -> how many more??
+//fix the figure 8 (i dont know how)
