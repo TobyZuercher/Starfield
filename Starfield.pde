@@ -87,36 +87,49 @@ class Imploder extends Particle
   }
 }
 
-class FigureEight extends Particle
+class Bouncer extends Particle
 {
   float initX, initY;
-  FigureEight()
+  Bouncer()
   {
     initX = mouseX;
     initY = mouseY;
-    x = initX;
-    y = 0;
+    x = mouseX;
+    y = mouseY;
     size = 10;
-    speed = (float)(Math.random() * 10);
+    speed = (float)(Math.random() * 10 + 5);
     timeAlive = 0;
-    col = 130;
+    col = 140;
     sat = 100;
     bri = (int)(Math.random() * 50 + 51);
     maxTime = 90;
-    angle = radians(-45);
   }
   
-  void move()
+  void move() //FIX PLEASE
   {
-    if(timeAlive < maxTime/2)
+    boolean m = true;
+    if(y + speed * sin(angle) > initY + 200 * sin(angle))
     {
-      x += 5.6;
-      y = initY + 80 * sin((x-initX)/40);
+      x = initX - 200 * cos(angle);
+      y = initY - 200 * sin(angle);
+      angle += radians(180);
+      m = false;
     }
-    if(timeAlive >= maxTime/2)
+    if(y + speed * sin(angle) < initY - 200 * sin(angle))
     {
-      x -= 5.6;
-      y = initY - 80 * sin((x-initX)/40);
+      x = initX + 200 * cos(angle);
+      y = initY + 200 * sin(angle);
+      angle += radians(180);
+      m = false;
+    }
+    
+    if(angle > 2*PI)
+    angle -= 2*PI;
+    
+    if(m == true)
+    {
+      x += speed * cos(angle);
+      y += speed * sin(angle);
     }
     timeAlive++;
   }
@@ -151,7 +164,7 @@ void draw()
 void mousePressed()
 {
   int pType = (int)(Math.random()*3);
-  //pType = 3;
+  pType = 3;
   boolean b = false;
   for(int j = 0; j < guys.length && b == false; j++)
   {
@@ -174,10 +187,11 @@ void mousePressed()
           guys[j][i] = new Imploder(mouseX + 50*cos(i * radians(360/guys[j].length)), mouseY + 50*sin(i * radians(360/guys[j].length)));
           guys[j][i].angle = i * radians(360/guys[j].length);
         }
-        /*if(pType == 3)
+        if(pType == 3)
         {
-          guys[j][i] = new FigureEight();
-        }*/
+          guys[j][i] = new Bouncer();
+          guys[j][i].angle = i * radians(360/guys[j].length);
+        }
       }
       b = true;
     }
