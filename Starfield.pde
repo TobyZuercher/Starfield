@@ -115,7 +115,7 @@ Particle[][] guys = new Particle[20][50];
 int x = 0;
 void setup()
 {
-  size(800, 800);
+  size(700, 700);
   noStroke();
   colorMode(HSB, 360, 100, 100, 100);
 }
