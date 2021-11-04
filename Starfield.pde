@@ -6,6 +6,35 @@ class Particle
     x = mouseX;
     y = mouseY;
     size = 10;
+    speed = (float)(Math.random() * 10 + 5);
+    timeAlive = 0;
+    col = 0;
+    sat = (float)(Math.random() * 100);
+    bri = 100;
+    maxTime = 100;
+  }
+  
+  void move()
+  {
+    x += speed * cos(angle);
+    y += speed * sin(angle);
+    timeAlive++;
+  }
+  
+  void show()
+  {
+    fill(col, sat, bri);
+    ellipse(x, y, size, size);
+  }
+}
+
+class Swirler extends Particle
+{
+  Swirler()
+  {
+    x = mouseX;
+    y = mouseY;
+    size = 10;
     speed = (float)(Math.random() * 10);
     timeAlive = 0;
     col = (float)(Math.random() * 60 + 240);
@@ -19,35 +48,6 @@ class Particle
     x += speed * cos(angle);
     y += speed * sin(angle);
     angle += radians(4);
-    timeAlive++;
-  }
-  
-  void show()
-  {
-    fill(col, sat, bri);
-    ellipse(x, y, size, size);
-  }
-}
-
-class Exploder extends Particle
-{
-  Exploder()
-  {
-    x = mouseX;
-    y = mouseY;
-    size = 10;
-    speed = (float)(Math.random() * 10 + 5);
-    timeAlive = 0;
-    col = 0;
-    sat = (float)(Math.random() * 100);
-    bri = 100; //make it white instead idk how //prob saturation with 100 bri
-    maxTime = 100;
-  }
-  
-  void move()
-  {
-    x += speed * cos(angle);
-    y += speed * sin(angle);
     timeAlive++;
   }
 }
@@ -87,17 +87,15 @@ class Imploder extends Particle
   }
 }
 
-class Bouncer extends Particle
+class Ringer extends Particle
 {
   float initX, initY;
-  Bouncer()
+  Ringer()
   {
-    initX = mouseX;
-    initY = mouseY;
     x = mouseX;
     y = mouseY;
     size = 10;
-    speed = (float)(Math.random() * 10 + 5);
+    speed = (int)(Math.random() * 3) * 5 + 5;
     timeAlive = 0;
     col = 140;
     sat = 100;
@@ -105,32 +103,10 @@ class Bouncer extends Particle
     maxTime = 90;
   }
   
-  void move() //FIX PLEASE
+  void move()
   {
-    boolean m = true;
-    if(y + speed * sin(angle) > initY + 200 * sin(angle))
-    {
-      x = initX - 200 * cos(angle);
-      y = initY - 200 * sin(angle);
-      angle += radians(180);
-      m = false;
-    }
-    if(y + speed * sin(angle) < initY - 200 * sin(angle))
-    {
-      x = initX + 200 * cos(angle);
-      y = initY + 200 * sin(angle);
-      angle += radians(180);
-      m = false;
-    }
-    
-    if(angle > 2*PI)
-    angle -= 2*PI;
-    
-    if(m == true)
-    {
-      x += speed * cos(angle);
-      y += speed * sin(angle);
-    }
+    x += speed * cos(angle);
+    y += speed * sin(angle);
     timeAlive++;
   }
 }
@@ -146,7 +122,6 @@ void setup()
 
 void draw()
 {
-  //background(100);
   fill(0, 0, 5, 40);
   rect(0, 0, 800, 800);
   for(int j = 0; j < guys.length; j++)
@@ -163,8 +138,7 @@ void draw()
 
 void mousePressed()
 {
-  int pType = (int)(Math.random()*3);
-  pType = 3;
+  int pType = (int)(Math.random()*4);
   boolean b = false;
   for(int j = 0; j < guys.length && b == false; j++)
   {
@@ -179,7 +153,7 @@ void mousePressed()
         }
         if(pType == 1)
         {
-          guys[j][i] = new Exploder();
+          guys[j][i] = new Swirler();
           guys[j][i].angle = i * radians(360/guys[j].length);
         }
         if(pType == 2)
@@ -189,7 +163,7 @@ void mousePressed()
         }
         if(pType == 3)
         {
-          guys[j][i] = new Bouncer();
+          guys[j][i] = new Ringer();
           guys[j][i].angle = i * radians(360/guys[j].length);
         }
       }
@@ -197,6 +171,3 @@ void mousePressed()
     }
   }
 }
-
-//randomized animations -> how many more??
-//fix the figure 8 (i dont know how)
